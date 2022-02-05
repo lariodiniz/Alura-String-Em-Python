@@ -1,8 +1,15 @@
 import re
+from decimal import Decimal
 class ExtratorURL:
+
+    @property
+    def url(self):
+        return self.__url
+
     def __init__(self, url):
         self.__url = self.sanitiza_url(url)
         self.__valida_url()
+        self.__valor_dolar_real = Decimal(5.50)
 
     def sanitiza_url(self, url):
         if type(url) == str:
@@ -41,12 +48,40 @@ class ExtratorURL:
         
         return valor
 
-    @property
-    def url(self):
-        return self.__url
+    def conversao(self):
+        quantidade = Decimal(extrator_url.get_valor_parametro("quantidade"))
+        destino = extrator_url.get_valor_parametro("moedaDestino")
+        origem = extrator_url.get_valor_parametro("moedaOrigem")
+       
+        if destino == 'dolar' and origem =='real':
+            conversao = quantidade / self.__valor_dolar_real
+            print(f'Convertendo {quantidade:.2f} {origem} para {destino}: {conversao:.2f}')
+        elif destino == 'real' and origem =='dolar':
+            conversao = quantidade * self.__valor_dolar_real
+            print(f'Convertendo {quantidade:.2f} {origem} para {destino}: {conversao:.2f}')
+        else:
+            print('Conversão não disponivel')
+
         
 
-url = 'https://bytebank.com/cambio?quantidade=100&moedaOrigem=real&moedaDestino=dolar'
+    def __len__(self):
+        return len(self.__url)
+        
+
+    def __str__(self):
+        return f'{self.url} \nParametros: {self.get_url_parametros()}\nURL Base: {self.get_url_base()}'
+
+    def __eq__(self, other):
+        return self.url == other.url
+
+url = 'bytebank.com/cambio?quantidade=100&moedaOrigem=real&moedaDestino=dolar'
 extrator_url = ExtratorURL(url)
+#extrator_url_2 = ExtratorURL(url)
+#print(extrator_url_2 == extrator_url)
+
 valor_quantidade = extrator_url.get_valor_parametro("quantidade")
-print(valor_quantidade)
+
+#print(f'O tamanho da URL é : {len(extrator_url)}')
+#print(extrator_url)
+#rint(valor_quantidade)
+extrator_url.conversao()
